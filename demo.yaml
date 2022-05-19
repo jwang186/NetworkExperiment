@@ -1,0 +1,65 @@
+admin:
+  access_log_path: /tmp/demo_envoy_admin_access.log
+  address:
+    pipe: { path: /tmp/demo_admin.sock, mode: 438 }
+static_resources:
+  clusters:
+  - name: demo_admin
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: demo_admin
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  pipe:
+                    path: /tmp/demo_admin.sock
+                    mode: 438
+  - name: appnet_agent
+    lb_policy: ROUND_ROBIN
+    type: static
+    load_assignment:
+      cluster_name: appnet_agent
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  pipe:
+                    path: "/tmp/appnet_admin.sock"
+                    mode: 438
+  listeners:
+    - address:
+        pipe:
+          path: /tmp/demo_listener.sock
+          mode: 438
+      default_filter_chain:
+        filters:
+          - name: http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              stat_prefix: listener
+              http_filters:
+                - name: envoy.filters.http.aws_request_signing
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.aws_request_signing.v3.AwsRequestSigning
+                    service_name: appmesh
+                    region: us-east-1
+                    host_rewrite: appmesh-envoy-management.us-east-1.amazonaws.com
+                - name: envoy.filters.http.router
+              route_config:
+                name: local_route
+                virtual_hosts:
+                  - name: backend
+                    domains:
+                      - "*"
+                    routes:
+                      - match:
+                          prefix: "/demo/admin/"
+                        route:
+                          prefix_rewrite: /
+                          cluster: demo_admin
+                      - match:
+                          prefix: "/appnet/agent/"
+                        route:
+                          prefix_rewrite: /
+                          cluster: appnet_agent
