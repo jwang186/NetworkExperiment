@@ -8,14 +8,14 @@ import (
 
 func udsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	body := "Reached UDS Server" + "\n"
+	body := "\033[92m[Success]Reached UDS Server" + "\n"
 	w.Write([]byte(body))
 }
 
 func main() {
-	listener, _ := net.Listen("unix", "demo.sock")
+	listener, _ := net.Listen("unix", "/tmp/demo_server.sock")
         defer listener.Close()
-	http.HandleFunc("/uds", udsHandler)
-	fmt.Println("Server started, supported URL path: /uds")
+	http.HandleFunc("/ok", udsHandler)
+	fmt.Println("Server started, supported URL path: /ok")
 	http.Serve(listener, nil)
 }

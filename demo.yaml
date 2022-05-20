@@ -4,16 +4,16 @@ admin:
     pipe: { path: /tmp/demo_admin.sock, mode: 438 }
 static_resources:
   clusters:
-  - name: demo_admin
+  - name: demo_server
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: demo_admin
+      cluster_name: demo_server
       endpoints:
         - lb_endpoints:
             - endpoint:
                 address:
                   pipe:
-                    path: /tmp/demo_admin.sock
+                    path: /tmp/demo_server.sock
                     mode: 438
   - name: appnet_agent
     lb_policy: ROUND_ROBIN
@@ -57,10 +57,10 @@ static_resources:
                       - "*"
                     routes:
                       - match:
-                          prefix: "/demo/admin/"
+                          prefix: "/demo/server/"
                         route:
                           prefix_rewrite: /
-                          cluster: demo_admin
+                          cluster: demo_server
                       - match:
                           prefix: "/appnet/agent/"
                         route:
