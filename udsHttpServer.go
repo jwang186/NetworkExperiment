@@ -14,7 +14,7 @@ func udsHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	listener, _ := net.Listen("unix", "demo.sock")
-    defer listener.Close()
+        defer listener.Close()
 	http.HandleFunc("/uds", udsHandler)
 	fmt.Println("Server started, supported URL path: /uds")
 	http.Serve(listener, nil)

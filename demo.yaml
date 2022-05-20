@@ -43,8 +43,11 @@ static_resources:
                   typed_config:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.aws_request_signing.v3.AwsRequestSigning
                     service_name: appmesh
-                    region: us-east-1
-                    host_rewrite: appmesh-envoy-management.us-east-1.amazonaws.com
+                    region: us-west-2
+                    host_rewrite: appmesh-envoy-management.us-west-2.amazonaws.com
+                    match_excluded_headers:
+                    - exact: te
+                    - prefix: x  
                 - name: envoy.filters.http.router
               route_config:
                 name: local_route
