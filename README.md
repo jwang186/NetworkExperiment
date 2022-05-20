@@ -17,7 +17,7 @@ In another terminal
 
 ```curl --unix-socket /tmp/demo_listener.sock any/demo/server/ok```
 
-```curl --unix-socket /tmp/demo_listener.sock any/demo/admin/listeners```
+```curl --unix-socket /tmp/demo_admin.sock any/listeners```
 
 ## Experiment 4: Container with UDS
 ```./start_appnet_agent.sh``` before running this command, make sure we have appnet-agent container image ready and the AWS credentials are set.
@@ -26,7 +26,10 @@ This command will start a appnet-agent container and serve a HttpServer on UDS /
 ```docker run -v /tmp:/tmp demo``` it will start demo envoy in a container and share volume to /tmp
 ### Host to container communication with UDS
 ```curl --unix-socket /tmp/demo_listener.sock any/demo/server/ok``` What's the difference between this command and the command in Experiment 3? 
-Right now we are query on host UDS, and this host UDS is binded to demo envoy container UDS.
+Right now we are query on host UDS, and this host UDS is binded to demo envoy container UDS. You will see connection refused error. Demo envoy container is trying 
+to access /tmp/demo_server.sock which is which is created in host. Interestingly, setting the other permission to rw- will solve the problem.
+
+```sudo chmod 756 /tmp/demo_server.sock``` and run above command again.
 ### Container to container communication with UDS
 ```curl --unix-socket /tmp/demo_listener.sock any/appnet/agent/status``` You will see connection refused error. Demo envoy container is trying 
 to access /tmp/appnet_admin.sock which is created by appnet-agent container. We need to set the 'other permission'. Interestingly, demo envoy container 
