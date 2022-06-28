@@ -14,7 +14,7 @@ static_resources:
                 address:
                   socket_address:
                     address: 127.0.0.1
-                    port_value: 443
+                    port_value: 8085
   listeners:
     - address:
         socket_address:
@@ -70,7 +70,7 @@ static_resources:
                       - match:
                           prefix: "/demo/server"
                         route:
-                          host_rewrite_literal: www.google.com
+                          prefix_rewrite: /
                           cluster: demo_server
               http_filters:
                 - name: envoy.filters.http.router
@@ -126,7 +126,7 @@ static_resources:
                       - match:
                           prefix: "/demo/server"
                         route:
-                          host_rewrite_literal: www.google.com
+                          prefix_rewrite: /
                           cluster: demo_server
               http_filters:
                 - name: envoy.filters.http.router
