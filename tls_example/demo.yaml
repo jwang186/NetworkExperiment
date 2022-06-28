@@ -14,7 +14,7 @@ static_resources:
                 address:
                   socket_address:
                     address: 127.0.0.1
-                    port_value: 8085
+                    port_value: 443
   listeners:
     - address:
         socket_address:
