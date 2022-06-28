@@ -60,34 +60,24 @@ static_resources:
           - name: http_connection_manager
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-              stat_prefix: listener
-              http_filters:
-                - name: envoy.filters.http.aws_request_signing
-                  typed_config:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.aws_request_signing.v3.AwsRequestSigning
-                    service_name: appmesh
-                    region: us-west-2
-                    host_rewrite: appmesh-envoy-management.us-west-2.amazonaws.com
-                    match_excluded_headers:
-                    - exact: te
-                    - prefix: x  
-                - name: envoy.filters.http.router
+              stat_prefix: ingress_http
               route_config:
                 name: local_route
                 virtual_hosts:
-                  - name: backend
-                    domains:
-                      - "*"
+                  - name: local_service
+                    domains: ["*"]
                     routes:
                       - match:
-                          prefix: "/demo/server/"
+                          prefix: "/demo/server"
                         route:
-                          prefix_rewrite: /
+                          host_rewrite_literal: www.google.com
                           cluster: demo_server
+              http_filters:
+                - name: envoy.filters.http.router
     - address:
         socket_address:
           address: 0.0.0.0
-          port_value: 8090 # no client certificate
+          port_value: 8090
       default_filter_chain:
         transport_socket:
           name: envoy.transport_sockets.tls
@@ -124,27 +114,17 @@ static_resources:
           - name: http_connection_manager
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-              stat_prefix: listener
-              http_filters:
-                - name: envoy.filters.http.aws_request_signing
-                  typed_config:
-                    "@type": type.googleapis.com/envoy.extensions.filters.http.aws_request_signing.v3.AwsRequestSigning
-                    service_name: appmesh
-                    region: us-west-2
-                    host_rewrite: appmesh-envoy-management.us-west-2.amazonaws.com
-                    match_excluded_headers:
-                      - exact: te
-                      - prefix: x
-                - name: envoy.filters.http.router
+              stat_prefix: ingress_http
               route_config:
                 name: local_route
                 virtual_hosts:
-                  - name: backend
-                    domains:
-                      - "*"
+                  - name: local_service
+                    domains: ["*"]
                     routes:
                       - match:
-                          prefix: "/demo/server/"
+                          prefix: "/demo/server"
                         route:
-                          prefix_rewrite: /
+                          host_rewrite_literal: www.google.com
                           cluster: demo_server
+              http_filters:
+                - name: envoy.filters.http.router
