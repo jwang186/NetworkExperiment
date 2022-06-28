@@ -12,9 +12,9 @@ static_resources:
         - lb_endpoints:
             - endpoint:
                 address:
-                  pipe:
-                    path: /tmp/demo_server.sock
-                    mode: 438
+                  socket_address:
+                    address: 127.0.0.1
+                    port_value: 8081
   listeners:
     - address:
         socket_address:
